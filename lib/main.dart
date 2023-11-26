@@ -162,7 +162,9 @@ class HomeScreen extends StatelessWidget {
       }
        else  if (title == 'Link Popo') {
         // If the title is 'Manage Warehouses', then launch the URL
-        _launchURL();
+        _launchURL_popo();
+      } else if(title == 'RC Introduction'){
+        _launchURL_RC();
       }
        else {
         Navigator.of(context).push(MaterialPageRoute(
@@ -208,8 +210,21 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-
-void _launchURL() async {
+void _launchURL_RC() async {
+  const url = 'https://freshman.postech.ac.kr/residentialcollege/aboutrc/';
+  try {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      // You can show an error message here
+      print('Could not launch $url');
+    }
+  } catch (e) {
+    // You can show an error message here
+    print('Could not launch $url: $e');
+  }
+}
+void _launchURL_popo() async {
   const url = 'https://popo.poapper.club/';
   try {
     if (await canLaunch(url)) {
@@ -226,6 +241,7 @@ void _launchURL() async {
 }
 
 
+//=========================Delivery
 class DeliveryBoxTile extends StatefulWidget {
   final ImageProvider image;
   final String title;
@@ -572,79 +588,52 @@ void _addNewDeliveryInfo(String restaurantName, String orderTime, String orderLi
 }
 
 }
+//=========================Delivery
 
 
 
+//=========================Warehouse
 class WarehouseManagementScreen extends StatefulWidget {
   @override
   _WarehouseManagementScreenState createState() => _WarehouseManagementScreenState();
 }
 
 class _WarehouseManagementScreenState extends State<WarehouseManagementScreen> {
-  List<Widget> packageTiles = [];
+  List<Map<String, dynamic>> packageData = [];
+  int counter = 0; // A counter to assign unique IDs
+  String category = 'Box'; // Move this to the state level
 
   @override
   void initState() {
     super.initState();
-    // Initialize your list with one package info or more if needed
-    packageTiles.add(_buildBoxedTile(
-      image: AssetImage('assets/images/box-linear.png'),
-      title: 'Package Info',
-      subtitle: '2023.06.10 - Package R-9',
-      color: Color(0xFF8f89b7),
-      titleColor: Colors.white,
-      subtitleColor: Colors.white,
-    ));
+    // Initialize your list with default package info or more if needed
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+      // ... existing Scaffold code ...
       body: Center(
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-               SizedBox(height: 10), // Some space at the top
-              _buildBoxedTile(
-                image: AssetImage('assets/images/notification.png'),
-                title: 'Your Notification Title',
-                subtitle: '2023.06.08 ~ 2023.06.10',
-                color: Color(0xFF8f89b7),
-                titleColor: Colors.white,
-                subtitleColor: Colors.white,
-              ),
+              // ... existing widgets ...
+              Text('WarehouseManage', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF8f89b7))),
               SizedBox(height: 10),
-              _buildBoxedTile(
-                image: AssetImage('assets/images/notification.png'),
-                title: 'Another Notification Title',
-                subtitle: 'Your message here!',
-                color: Color(0xFF8f89b7),
-                titleColor: Colors.white,
-                subtitleColor: Colors.white,
-                
-              ),
-              SizedBox(height: 40), // Space before the warehouse title
-              Text('Warehouse', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF8f89b7))),
-              SizedBox(height: 10),
-              _buildBoxedTile(
-                image: AssetImage('assets/images/refrigerator.png'),
-                title: 'Warehouse Info',
-                subtitle: '2023.06.10 - Warehouse 128',
-                color: Color(0xFF8f89b7),
-                titleColor: Colors.white,
-                subtitleColor: Colors.white,
-
-              ),
-              SizedBox(height: 10),
-              ...packageTiles, // This will display the list of tiles on the screen
-              SizedBox(height: 20),
+              ...packageData.map((data) => _buildBoxedTile(
+                id: data['id'],
+                image: data['image'],
+                title: data['title'],
+                subtitle: data['subtitle'],
+                color: data['color'],
+              )).toList(),
               ElevatedButton(
-                onPressed: _addNewPackageInfo, // Add package info when this button is pressed
+                onPressed: _showAddPackageDialog,
                 child: Text('+ Add New Item'),
                 style: ElevatedButton.styleFrom(primary: Color(0xFF8f89b7)),
               ),
+              // ... existing widgets ...
             ],
           ),
         ),
@@ -652,26 +641,88 @@ class _WarehouseManagementScreenState extends State<WarehouseManagementScreen> {
     );
   }
 
-void _addNewPackageInfo() {
-  setState(() {
-    // Add a new package info tile to the list with some margin
-    packageTiles.add(
-      Padding(
-        padding: const EdgeInsets.only(top: 8.0), // This adds space between the tiles
-        child: _buildBoxedTile(
-          image: AssetImage('assets/images/box-linear.png'), // Make sure to have this image in your assets
-          title: 'New Package Info',
-          subtitle: 'Timestamp - Package XYZ',
-          color: Color(0xFF8f89b7),
-          titleColor: Colors.white,
-          subtitleColor: Colors.white,
-        ),
-      ),
-    );
-  });
-}
+    void _showAddPackageDialog() {
+    String location = '';
+    String date = '';
 
-  Widget _buildBoxedTile({
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return StatefulBuilder( // Use StatefulBuilder to update the dialog's state
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: Text('Add New Package'),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    TextField(
+                      decoration: InputDecoration(hintText: 'Enter location'),
+                      onChanged: (value) => location = value,
+                    ),
+                    TextField(
+                      decoration: InputDecoration(hintText: 'Enter date'),
+                      onChanged: (value) => date = value,
+                    ),
+                    DropdownButton<String>(
+                      value: category,
+                      onChanged: (String? newValue) {
+                        setState(() { // Update the dialog's state
+                          category = newValue!;
+                        });
+                      },
+                      items: <String>['Box', 'Refrigerator']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Cancel'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                TextButton(
+                  child: Text('Add'),
+                  onPressed: () {
+                      print('Adding Package: $location, $date, $category');
+                    _addNewPackageInfo(location, date, category);
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+ void _addNewPackageInfo(String location, String date, String category) {
+    setState(() {
+      packageData.add({
+        'id': counter,
+        'image': (category == 'Box') ? AssetImage('assets/images/box-linear.png') : AssetImage('assets/images/refrigerator.png'),
+        'title': 'Location: $location',
+        'subtitle': 'Date: $date - Category: $category',
+        'color': Color(0xFF8f89b7),
+      });
+      counter++;
+    });
+  }
+  void _removePackageInfo(int id) {
+    setState(() {
+      packageData.removeWhere((element) => element['id'] == id);
+    });
+  }
+
+Widget _buildBoxedTile({
+    required int id,
     required ImageProvider image,
     required String title,
     required String subtitle,
@@ -680,7 +731,7 @@ void _addNewPackageInfo() {
     Color subtitleColor = Colors.white,
   }) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 15),
+      margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: color,
@@ -693,20 +744,42 @@ void _addNewPackageInfo() {
           ),
         ],
       ),
-      child: ListTile(
-        leading: Image(
-          image: image,
-          width: 40,
-          height: 40,
-          color: Colors.white,
-        ),
-        title: Text(title, style: TextStyle(color: titleColor)),
-        subtitle: Text(subtitle, style: TextStyle(color: subtitleColor)),
+      child: Column(
+        children: [
+          ListTile(
+            leading: Image(
+              image: image,
+              width: 40,
+              height: 40,
+              color: Colors.white,
+            ),
+            title: Text(
+              title,
+              style: TextStyle(color: titleColor, fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text(
+              subtitle,
+              style: TextStyle(color: subtitleColor),
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: () => _removePackageInfo(id),
+              child: Text('Remove', style: TextStyle(color: Colors.white)),
+              style: TextButton.styleFrom(padding: EdgeInsets.all(8)),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
+//
+ 
+//
 
+// ware house=============================
 
 
 
