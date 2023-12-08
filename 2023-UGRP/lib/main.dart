@@ -163,74 +163,45 @@ class HomeScreen extends StatelessWidget {
        else  if (title == 'Link Popo') {
         // If the title is 'Manage Warehouses', then launch the URL
         _launchURL_popo();
-        } else if(title == 'RC Introduction'){
 
-      // Show dialog with options for RC 소개 and RA 소개
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Choose an option', textAlign: TextAlign.center),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(bottom: 8.0),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF8f89b7),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: ElevatedButton(
+      
+      } else if(title == 'RC Introduction'){
+        // Show dialog with options for RC 소개 and RA 소개
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Choose an option'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton(
                     onPressed: () {
                       // Navigate to RCIntroductionScreen
                       _launchURL_RC();
                     },
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.transparent, // Set button color to transparent
-                      elevation: 0, // Remove button shadow
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'RC 소개',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
+                    child: Text('RC 소개'),
                   ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(bottom: 8.0),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF8f89b7),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: ElevatedButton(
+                  ElevatedButton(
                     onPressed: () {
                       // Show RA 조직도 content (You need to implement RAIntroductionScreen)
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => RAIntroductionScreen(),
                       ));
                     },
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.transparent, // Set button color to transparent
-                      elevation: 0, // Remove button shadow
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'RA 소개',
-                        style: TextStyle(color: Colors.white),
+                    child: Text('RA 소개'),
                   ),
-                  ),
-                ),
+                ],
               ),
-            ],
-          ),
-         );
-      },
-     );
+            );
+          },
+        );
+      }
 
-      } else {
+
+
+
+       else {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => DetailScreen(title: title),
         ));
@@ -311,23 +282,19 @@ class RAIntroductionScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('RA 소개'),
-        backgroundColor: Color(0xFF8f89b7), // 연보라색으로 변경
-
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // RA 조직도 사진 추가
-          Image.network(
-            'https://i.ibb.co/b5VjvYq/Untitled.png',
-            height:600,
-            width:1000,
-          ),
+          Image.asset('assets/images/ra_intro_image.png', height: 100, width: 100),
+          Text('RA 소개 화면'),
         ],
       ),
     );
   }
 }
+
 
 //=========================Delivery
 class DeliveryBoxTile extends StatefulWidget {
@@ -886,42 +853,27 @@ class DetailScreen extends StatelessWidget {
   }
 }
 
-///달력=============================================
 class ScheduleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime(2101),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Color(0xFF8f89b7), // 연보라색
-                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0), // 크기 조절
-              ),
-              child: Text('Pick a date'),
-            ),
-            SizedBox(height: 2.0), // 버튼과 이미지 사이 여백 조절
-            Image.network(
-              'https://i.ibb.co/pzn4rdQ/2023-2-12.png', // 이미지 URL로 수정
-              height: 300,
-              width: 400,
-            ),
-          ],
+        child: ElevatedButton(
+          onPressed: () {
+            showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(2000),
+              lastDate: DateTime(2101),
+            );
+          },
+          child: Text('Pick a date'),
         ),
       ),
     );
   }
 }
+
 
 //mypage
 class MyPage extends StatelessWidget {
