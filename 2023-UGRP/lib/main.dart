@@ -22,75 +22,100 @@ class NavigationScreen extends StatefulWidget {
 
 class _NavigationScreenState extends State<NavigationScreen> {
   int _currentIndex = 0;
+
+  final _navigatorKeys = [
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+  ];
+  final List<String> _titles = [
+    'Menu',
+    'My Page',
+    'Schedule',
+    'Notification',
+  ];
   String _currentTitle = 'Menu';
-  final PageController _pageController = PageController();
-  final List<String> _titles = ['Menu','My Page', 'Calendar'];
-  void updateTitle(String title) {
-    setState(() {
-      _currentTitle = title;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    // _pages 리스트를 여기서 초기화합니다.
-    final List<Widget> _pages = [
-      HomeScreen(updateTitle: updateTitle), // updateTitle 함수를 전달합니다.
-      MyPage(),
-      ScheduleScreen(),
-      NotificationScreen(),
-    ];
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_titles[_currentIndex]), // AppBar 제목 설정
+      appBar: AppBar( 
+        title: Text(_currentTitle),
         backgroundColor: Color(0xFF8f89b7),
         centerTitle: true,
         toolbarHeight: 80.0, // Increase the size of the top bar
       ),
-      body: PageView(
-        controller: _pageController,
-        physics: NeverScrollableScrollPhysics(),
-        children: _pages,
+      body: Stack(
+        children: [
+          _buildOffstageNavigator(0, HomeScreen(updateTitle: updateTitle)),
+          _buildOffstageNavigator(1, MyPage()),
+          _buildOffstageNavigator(2, ScheduleScreen()), // Schedule screen now includes a calendar function
+          _buildOffstageNavigator(3, Text('Notification')),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Color(0xFF8f89b7),
-        unselectedItemColor: Color(0xFF8f89b7),
-        onTap: (int index) {
-          setState(() {
-            _currentIndex = index;
-            _pageController.jumpToPage(index); // 애니메이션 없이 페이지 변경
-          });
-        },
+        onTap: onTabTapped,
         currentIndex: _currentIndex,
+        selectedFontSize: 18, // Increase size for bottom bar items
+        unselectedFontSize: 16,
+        iconSize: 12.0,
+        selectedItemColor: Color(0xFF8f89b7),
+        unselectedItemColor: Colors.grey,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.menu),
-            label: 'Menu',
+            icon: Image.asset('assets/images/menu.png', height: 52, width: 52),//Icon(Icons.menu),
+            label: 'Menu',       
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'My page',
+            icon: Image.asset('assets/images/home.png',height: 52, width: 52),
+            label: 'My Page',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Calander',
+            icon: Image.asset('assets/images/calendar.png', height: 52, width: 52),
+            label: 'Schedule',
           ),
-          // 여기에 추가 BottomNavigationBarItem들을 정의합니다.
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/images/notification.png', height: 52, width: 52),
+            label: 'Notification',
+          ),
         ],
-        // BottomNavigationBarItem 설정...
       ),
     );
   }
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
+  Widget _buildOffstageNavigator(int index, Widget child) {
+    return Offstage(
+      offstage: _currentIndex != index,
+      
+      child: Navigator(
+        key: _navigatorKeys[index],
+        onGenerateRoute: (routeSettings) {
+          return MaterialPageRoute(
+            builder: (context) => child,
+          );
+        },
+      ),
+    );
   }
+
+  void onTabTapped(int index) {
+    if (index == 0) {
+      _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
+    }
+    setState(() {
+      _currentIndex = index;
+      _currentTitle = _titles[index];
+    });
+  }
+  void updateTitle(String title) {
+  setState(() {
+    _currentTitle = title;
+  });
 }
 
- 
+}//navigation
+
 
 class HomeScreen extends StatelessWidget {
   final Function(String) updateTitle;
@@ -134,82 +159,49 @@ class HomeScreen extends StatelessWidget {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => WarehouseManagementScreen(),
         ));
-      }else if(title == 'Report/Proposal'){
-          Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ReportProposalScreen(),
-        ));
       }
        else  if (title == 'Link Popo') {
         // If the title is 'Manage Warehouses', then launch the URL
         _launchURL_popo();
-        } else if(title == 'RC Introduction'){
 
-      // Show dialog with options for RC 소개 and RA 소개
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Choose an option', textAlign: TextAlign.center),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(bottom: 8.0),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF8f89b7),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: ElevatedButton(
+      
+      } else if(title == 'RC Introduction'){
+        // Show dialog with options for RC 소개 and RA 소개
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Choose an option'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton(
                     onPressed: () {
                       // Navigate to RCIntroductionScreen
                       _launchURL_RC();
                     },
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.transparent, // Set button color to transparent
-                      elevation: 0, // Remove button shadow
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'RC 소개',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
+                    child: Text('RC 소개'),
                   ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(bottom: 8.0),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF8f89b7),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: ElevatedButton(
+                  ElevatedButton(
                     onPressed: () {
                       // Show RA 조직도 content (You need to implement RAIntroductionScreen)
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => RAIntroductionScreen(),
                       ));
                     },
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.transparent, // Set button color to transparent
-                      elevation: 0, // Remove button shadow
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'RA 소개',
-                        style: TextStyle(color: Colors.white),
+                    child: Text('RA 소개'),
                   ),
-                  ),
-                ),
+                ],
               ),
-            ],
-          ),
-         );
-      },
-     );
+            );
+          },
+        );
+      }
 
-      } else {
+
+
+
+       else {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => DetailScreen(title: title),
         ));
@@ -283,172 +275,6 @@ void _launchURL_popo() async {
 }
 }
 
-<<<<<<< HEAD
-//=========================// Report
-class ReportProposalScreen extends StatefulWidget {
-  @override
-  _ReportProposalScreenState createState() => _ReportProposalScreenState();
-}
-
-class _ReportProposalScreenState extends State<ReportProposalScreen> {
-  List<Map<String, dynamic>> packageData = [];
-  int counter = 0; // A counter to assign unique IDs
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize your list with default package info or more if needed
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Report/Proposal', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF8f89b7))),
-              SizedBox(height: 10),
-              ...packageData.map((data) => _buildBoxedTile(
-                id: data['id'],
-                title: data['title'],
-                content: data['content'],
-                color: data['color'],
-              )).toList(),
-              ElevatedButton(
-                onPressed: _showAddPackageDialog,
-                child: Text('+ Add New Item'),
-                style: ElevatedButton.styleFrom(primary: Color(0xFF8f89b7)),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showAddPackageDialog() {
-    String title = '';
-    String content = '';
-
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Add New Item'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                TextField(
-                  decoration: InputDecoration(hintText: 'Enter title'),
-                  onChanged: (value) => title = value,
-                ),
-                TextField(
-                  decoration: InputDecoration(hintText: 'Enter content'),
-                  onChanged: (value) => content = value,
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: Text('Add'),
-              onPressed: () {
-                _addNewItem(title, content);
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _addNewItem(String title, String content) {
-    setState(() {
-      packageData.add({
-        'id': counter,
-        'title': title,
-        'content': content,
-        'color': Color(0xFF8f89b7),
-      });
-      counter++;
-    });
-  }
-
-  Widget _buildBoxedTile({
-    required int id,
-    required String title,
-    required String content,
-    required Color color,
-  }) {
-    return InkWell(
-      onTap: () => _showPackageDetails(content),
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              offset: Offset(0, 2),
-              blurRadius: 4,
-            ),
-          ],
-        ),
-        child: ListTile(
-          title: Text(
-            title,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          trailing: IconButton(
-            icon: Icon(Icons.delete, color: Colors.white),
-            onPressed: () => _removeItem(id),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showPackageDetails(String content) {
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Item Details'),
-          content: SingleChildScrollView(
-            child: Text(content),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Close'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _removeItem(int id) {
-    setState(() {
-      packageData.removeWhere((element) => element['id'] == id);
-    });
-  }
-}
-
-// Report=============================
-
-
-=======
 //=========================RA 소개
 class RAIntroductionScreen extends StatelessWidget {
   @override
@@ -456,24 +282,19 @@ class RAIntroductionScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('RA 소개'),
-        backgroundColor: Color(0xFF8f89b7), // 연보라색으로 변경
-
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // RA 조직도 사진 추가
-          Image.network(
-            'https://i.ibb.co/b5VjvYq/Untitled.png',
-            height:600,
-            width:1000,
-          ),
+          Image.asset('assets/images/ra_intro_image.png', height: 100, width: 100),
+          Text('RA 소개 화면'),
         ],
       ),
     );
   }
 }
->>>>>>> 152247bf1129a5f40089195b6729ad3aaf0a8119
+
 
 //=========================Delivery
 class DeliveryBoxTile extends StatefulWidget {
@@ -1014,16 +835,9 @@ Widget _buildBoxedTile({
 //
 
 // ware house=============================
-<<<<<<< HEAD
 
 
 
-
-
-
-
-=======
->>>>>>> 152247bf1129a5f40089195b6729ad3aaf0a8119
 class DetailScreen extends StatelessWidget {
   final String title;
 
@@ -1039,65 +853,43 @@ class DetailScreen extends StatelessWidget {
   }
 }
 
-///달력=============================================
 class ScheduleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime(2101),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Color(0xFF8f89b7), // 연보라색
-                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0), // 크기 조절
-              ),
-              child: Text('Pick a date'),
-            ),
-            SizedBox(height: 8.0), // 버튼과 이미지 사이 여백 조절
-            Image.network(
-              'https://i.ibb.co/17C0r9Q/2023-12-20-211943.png', // 이미지 URL로 수정
-              
-              height: 300,
-              width: 400,
-            ),
-          ],
+        child: ElevatedButton(
+          onPressed: () {
+            showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(2000),
+              lastDate: DateTime(2101),
+            );
+          },
+          child: Text('Pick a date'),
         ),
       ),
     );
   }
 }
 
-//mypage =====================================================
+
+//mypage
 class MyPage extends StatelessWidget {
   // Define variables for the text content
-  final String name = "박지원";
-  final String studentId = "20200000";
-  final String room = "1022호";
-  final String profile = "유현아 이승은";
+  final String name = "임지훈";
+  final String department = "컴퓨터공학과";
+  final String room = "Room 123";
+  final String roommates = "김정윤";
+  final program = ["카네이션 만들기","RC 잔치","베이킹 둥지"];
+  final program_list = ["층프로그램","전체행사","둥지"];
+  final prgram_info = ["2023.10.22 19:00/층홀","2023.10.22 19:00/층홀","2023.10.22 19:00/층홀"];
+  final String quantity = "10";
+  final String storageLocation = "Warehouse A";
+  final String storageDate = "2023-10-10";
+  final String Ra = "박지원";
 
-  final List<String> programType = ["층 프로그램","전체 행사", "둥지"];
-  final List<String> programTitles = ["카네이션 만들기", "RC 잔치", "베이킹 둥지"];
-  final List<String> programDetails = [
-    "2023.10.22 19:00 / 층홀",
-    "2023.10.22 19:00 / RC 1층",
-    "2023.10.22 19:00 / 휴게실4"
-  ];
-
-  final int quantity = 1;
-  final String storageLocation = "129";
-  final String storageDate = "2023.10.22";
- 
-   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1107,15 +899,46 @@ class MyPage extends StatelessWidget {
         child: AppBar(
           backgroundColor: Color(0xFF8f89b7), // Similar color theme
           elevation: 0,
-          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+            ),
             _buildPersonInfo(),
-            _buildProgramSection(),
-            _buildStorageSection()
+            SizedBox(height: 10),
+            Text(
+              'program',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF8f89b7),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(1.0),
+            ),
+            _buildProgramInfo(0),
+            SizedBox(height: 10), // Add some space between program boxes
+            _buildProgramInfo(1),
+            SizedBox(height: 10), // Add some space between program boxes
+            _buildProgramInfo(2),
+            SizedBox(height: 20),
+            Text(
+              'cotain',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF8f89b7),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(1.0),
+            ),
+            _buildContainerInfo(),
           ],
         ),
       ),
@@ -1124,183 +947,105 @@ class MyPage extends StatelessWidget {
 
   Widget _buildPersonInfo() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical:22.0, horizontal : 16.0),
-      margin: EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(6), // Reduce horizontal size
+      margin: EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10.0),
+        border: Border.all(color: Color(0xFF8f89b7)),
+        borderRadius: BorderRadius.circular(10),
+        color: Color(0xFFFFFFFF),
       ),
       child: Row(
         children: <Widget>[
-          Image.network(
-              'https://i.ibb.co/RB8dzVk/2023-12-20-210902.png',
-              width:100,
-              height:100,
-              fit: BoxFit.cover,
+          Image.asset(
+            'assets/images/notification.png', // Replace with your image path
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
           ),
           SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text('Name: $name', style: TextStyle(fontSize: 16)),
-                Text('Department: 산업경영공학과', style: TextStyle(fontSize: 16)), // 이미지에 따라 학과명 추가
-                Text('Room: $room', style: TextStyle(fontSize: 16)),
-                Text('Roommates: 박정은', style: TextStyle(fontSize: 16)), // 이미지에 따라 룸메이트 이름 추가
-                Text('Ra: $profile', style: TextStyle(fontSize: 16)),
-              ],
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('Name: $name'),
+              Text('Department: $department'),
+              Text('Room: $room'),
+              Text('Roommates: $roommates'),
+              Text('Ra: ,$Ra'), // Not sure what this line should display
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildProgramSection() {
+  Widget _buildProgramInfo(int pindx) {
+    String program_ = program[pindx];
+    String program_list_ = program_list[pindx];
+    String prgram_info_ = prgram_info[pindx];
     return Padding(
-      padding: EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            '프로그램 신청 내역',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF8f89b7),
-            ),
-          ),
-          ...List.generate(programTitles.length, (index) {
-            return _buildProgramInfo(index);
-          }),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProgramInfo(int index) {
-    return Container(
-      width: double.infinity,
-      margin: EdgeInsets.symmetric(vertical: 10),
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white, // 박스 배경 흰색
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            programType[index],
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black
-            ),
-          ),
-          SizedBox(height: 6),
-          Text(
-            programTitles[index],
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.black
-            ),
-          ),
-          SizedBox(height: 2),
-          Text(
-            programDetails[index],
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.black,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStorageSection() {
-    return Container(
-      padding: EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            '물품 보관 내역',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF8f89b7),
-            ),
-          ),
-         _buildStorageInfo(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStorageInfo() {
-    return Container(
-      width: double.infinity,
-      margin: EdgeInsets.symmetric(vertical: 10),
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-            Image.network(
-                'https://i.ibb.co/9NYPHc4/2023-12-20-213703.png',
-                width: 100,
-                height: 100,
-                fit:BoxFit.cover,
-            ),
-          SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text('수량: $quantity', style: TextStyle(fontSize: 16)),
-                Text('보관위치: $storageLocation', style: TextStyle(fontSize: 16)),
-                Text('보관일: $storageDate', style: TextStyle(fontSize: 16)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-//알림=============================================
-class NotificationScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Center(
+      padding: const EdgeInsets.only(bottom: 0.0), // Add bottom margin
+      child: Container(
+        height: 60,
+        width: 450,
+        padding: EdgeInsets.all(10), // Reduce horizontal size
+        margin: EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(
+          border: Border.all(color: Color(0xFF8f89b7)),
+          borderRadius: BorderRadius.circular(10),
+          color: Color(0xFFFFFFFF),
+        ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime(2101),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Color(0xFF8f89b7), // 연보라색
-                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0), // 크기 조절
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text('$program_list_: $program_',
+            style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF8f89b7),
+              )
               ),
-              child: Text('Pick a date'),
+
+            Text('$prgram_info_',
+            style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF8f89b7),
+              )
             ),
-            SizedBox(height: 8.0), // 버튼과 이미지 사이 여백 조절
+            
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildContainerInfo() {
+    return Container(
+      padding: EdgeInsets.all(10), // Reduce horizontal size
+      margin: EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        border: Border.all(color: Color(0xFF8f89b7)),
+        borderRadius: BorderRadius.circular(10),
+        color: Color(0xFFFFFFFF),
+      ),
+      child: Row(
+        children: <Widget>[
+          Image.asset(
+            'assets/images/boxes.png', // Replace with your image path
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
+          ),
+          SizedBox(width: 20),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('Quantity: $quantity'),
+              Text('Storage Location: $storageLocation'),
+              Text('Storage Date: $storageDate'),
+            ],
+          ),
+        ],
       ),
     );
   }
