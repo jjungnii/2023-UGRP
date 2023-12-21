@@ -22,100 +22,75 @@ class NavigationScreen extends StatefulWidget {
 
 class _NavigationScreenState extends State<NavigationScreen> {
   int _currentIndex = 0;
-
-  final _navigatorKeys = [
-    GlobalKey<NavigatorState>(),
-    GlobalKey<NavigatorState>(),
-    GlobalKey<NavigatorState>(),
-    GlobalKey<NavigatorState>(),
-  ];
-  final List<String> _titles = [
-    'Menu',
-    'My Page',
-    'Schedule',
-    'Notification',
-  ];
   String _currentTitle = 'Menu';
+  final PageController _pageController = PageController();
+  final List<String> _titles = ['Menu','My Page', 'Calendar'];
+  void updateTitle(String title) {
+    setState(() {
+      _currentTitle = title;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    // _pages 리스트를 여기서 초기화합니다.
+    final List<Widget> _pages = [
+      HomeScreen(updateTitle: updateTitle), // updateTitle 함수를 전달합니다.
+      MyPage(),
+      ScheduleScreen(),
+      NotificationScreen(),
+    ];
+
     return Scaffold(
-      appBar: AppBar( 
-        title: Text(_currentTitle),
+      appBar: AppBar(
+        title: Text(_titles[_currentIndex]), // AppBar 제목 설정
         backgroundColor: Color(0xFF8f89b7),
         centerTitle: true,
         toolbarHeight: 80.0, // Increase the size of the top bar
       ),
-      body: Stack(
-        children: [
-          _buildOffstageNavigator(0, HomeScreen(updateTitle: updateTitle)),
-          _buildOffstageNavigator(1, MyPage()),
-          _buildOffstageNavigator(2, ScheduleScreen()), // Schedule screen now includes a calendar function
-          _buildOffstageNavigator(3, Text('Notification')),
-        ],
+      body: PageView(
+        controller: _pageController,
+        physics: NeverScrollableScrollPhysics(),
+        children: _pages,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        onTap: onTabTapped,
-        currentIndex: _currentIndex,
-        selectedFontSize: 18, // Increase size for bottom bar items
-        unselectedFontSize: 16,
-        iconSize: 12.0,
         selectedItemColor: Color(0xFF8f89b7),
-        unselectedItemColor: Colors.grey,
+        unselectedItemColor: Color(0xFF8f89b7),
+        onTap: (int index) {
+          setState(() {
+            _currentIndex = index;
+            _pageController.jumpToPage(index); // 애니메이션 없이 페이지 변경
+          });
+        },
+        currentIndex: _currentIndex,
         items: [
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/menu.png', height: 52, width: 52),//Icon(Icons.menu),
-            label: 'Menu',       
+            icon: Icon(Icons.menu),
+            label: 'Menu',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/home.png',height: 52, width: 52),
-            label: 'My Page',
+            icon: Icon(Icons.person),
+            label: 'My page',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/calendar.png', height: 52, width: 52),
-            label: 'Schedule',
+            icon: Icon(Icons.calendar_today),
+            label: 'Calander',
           ),
-          BottomNavigationBarItem(
-            icon: Image.asset('assets/images/notification.png', height: 52, width: 52),
-            label: 'Notification',
-          ),
+          // 여기에 추가 BottomNavigationBarItem들을 정의합니다.
         ],
+        // BottomNavigationBarItem 설정...
       ),
     );
   }
 
-  Widget _buildOffstageNavigator(int index, Widget child) {
-    return Offstage(
-      offstage: _currentIndex != index,
-      
-      child: Navigator(
-        key: _navigatorKeys[index],
-        onGenerateRoute: (routeSettings) {
-          return MaterialPageRoute(
-            builder: (context) => child,
-          );
-        },
-      ),
-    );
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
-
-  void onTabTapped(int index) {
-    if (index == 0) {
-      _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
-    }
-    setState(() {
-      _currentIndex = index;
-      _currentTitle = _titles[index];
-    });
-  }
-  void updateTitle(String title) {
-  setState(() {
-    _currentTitle = title;
-  });
 }
 
-}//navigation
-
+ 
 
 class HomeScreen extends StatelessWidget {
   final Function(String) updateTitle;
@@ -868,9 +843,6 @@ Widget _buildBoxedTile({
 //
 
 // ware house=============================
-
-
-
 class DetailScreen extends StatelessWidget {
   final String title;
 
@@ -1121,3 +1093,34 @@ class MyPage extends StatelessWidget {
   }
 }
 
+//알림=============================================
+class NotificationScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2101),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                primary: Color(0xFF8f89b7), // 연보라색
+                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0), // 크기 조절
+              ),
+              child: Text('Pick a date'),
+            ),
+            SizedBox(height: 8.0), // 버튼과 이미지 사이 여백 조절
+          ],
+        ),
+      ),
+    );
+  }
+}
