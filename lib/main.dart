@@ -159,6 +159,10 @@ class HomeScreen extends StatelessWidget {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => WarehouseManagementScreen(),
         ));
+      }else if(title == 'Report/Proposal'){
+          Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => ReportProposalScreen(),
+        ));
       }
        else  if (title == 'Link Popo') {
         // If the title is 'Manage Warehouses', then launch the URL
@@ -239,6 +243,170 @@ void _launchURL_popo() async {
   }
 }
 }
+
+//=========================// Report
+class ReportProposalScreen extends StatefulWidget {
+  @override
+  _ReportProposalScreenState createState() => _ReportProposalScreenState();
+}
+
+class _ReportProposalScreenState extends State<ReportProposalScreen> {
+  List<Map<String, dynamic>> packageData = [];
+  int counter = 0; // A counter to assign unique IDs
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize your list with default package info or more if needed
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Report/Proposal', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF8f89b7))),
+              SizedBox(height: 10),
+              ...packageData.map((data) => _buildBoxedTile(
+                id: data['id'],
+                title: data['title'],
+                content: data['content'],
+                color: data['color'],
+              )).toList(),
+              ElevatedButton(
+                onPressed: _showAddPackageDialog,
+                child: Text('+ Add New Item'),
+                style: ElevatedButton.styleFrom(primary: Color(0xFF8f89b7)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showAddPackageDialog() {
+    String title = '';
+    String content = '';
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Add New Item'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                TextField(
+                  decoration: InputDecoration(hintText: 'Enter title'),
+                  onChanged: (value) => title = value,
+                ),
+                TextField(
+                  decoration: InputDecoration(hintText: 'Enter content'),
+                  onChanged: (value) => content = value,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: Text('Add'),
+              onPressed: () {
+                _addNewItem(title, content);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _addNewItem(String title, String content) {
+    setState(() {
+      packageData.add({
+        'id': counter,
+        'title': title,
+        'content': content,
+        'color': Color(0xFF8f89b7),
+      });
+      counter++;
+    });
+  }
+
+  Widget _buildBoxedTile({
+    required int id,
+    required String title,
+    required String content,
+    required Color color,
+  }) {
+    return InkWell(
+      onTap: () => _showPackageDetails(content),
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              offset: Offset(0, 2),
+              blurRadius: 4,
+            ),
+          ],
+        ),
+        child: ListTile(
+          title: Text(
+            title,
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          trailing: IconButton(
+            icon: Icon(Icons.delete, color: Colors.white),
+            onPressed: () => _removeItem(id),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showPackageDetails(String content) {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Item Details'),
+          content: SingleChildScrollView(
+            child: Text(content),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Close'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _removeItem(int id) {
+    setState(() {
+      packageData.removeWhere((element) => element['id'] == id);
+    });
+  }
+}
+
+// Report=============================
+
 
 
 //=========================Delivery
@@ -780,6 +948,10 @@ Widget _buildBoxedTile({
 //
 
 // ware house=============================
+
+
+
+
 
 
 
