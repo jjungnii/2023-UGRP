@@ -910,9 +910,10 @@ class ScheduleScreen extends StatelessWidget {
               ),
               child: Text('Pick a date'),
             ),
-            SizedBox(height: 2.0), // 버튼과 이미지 사이 여백 조절
+            SizedBox(height: 8.0), // 버튼과 이미지 사이 여백 조절
             Image.network(
-              'https://i.ibb.co/pzn4rdQ/2023-2-12.png', // 이미지 URL로 수정
+              'https://i.ibb.co/17C0r9Q/2023-12-20-211943.png', // 이미지 URL로 수정
+              
               height: 300,
               width: 400,
             ),
@@ -923,21 +924,27 @@ class ScheduleScreen extends StatelessWidget {
   }
 }
 
-//mypage
+//mypage =====================================================
 class MyPage extends StatelessWidget {
   // Define variables for the text content
-  final String name = "임지훈";
-  final String department = "컴퓨터공학과";
-  final String room = "Room 123";
-  final String roommates = "김정윤";
-  final program = ["카네이션 만들기","RC 잔치","베이킹 둥지"];
-  final program_list = ["층프로그램","전체행사","둥지"];
-  final prgram_info = ["2023.10.22 19:00/층홀","2023.10.22 19:00/층홀","2023.10.22 19:00/층홀"];
-  final String quantity = "10";
-  final String storageLocation = "Warehouse A";
-  final String storageDate = "2023-10-10";
-  final String Ra = "박지원";
+  final String name = "박지원";
+  final String studentId = "20200000";
+  final String room = "1022호";
+  final String profile = "유현아 이승은";
 
+  final List<String> programType = ["층 프로그램","전체 행사", "둥지"];
+  final List<String> programTitles = ["카네이션 만들기", "RC 잔치", "베이킹 둥지"];
+  final List<String> programDetails = [
+    "2023.10.22 19:00 / 층홀",
+    "2023.10.22 19:00 / RC 1층",
+    "2023.10.22 19:00 / 휴게실4"
+  ];
+
+  final int quantity = 1;
+  final String storageLocation = "129";
+  final String storageDate = "2023.10.22";
+ 
+   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -947,46 +954,15 @@ class MyPage extends StatelessWidget {
         child: AppBar(
           backgroundColor: Color(0xFF8f89b7), // Similar color theme
           elevation: 0,
-        ),
+          ),
       ),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-            ),
             _buildPersonInfo(),
-            SizedBox(height: 10),
-            Text(
-              'program',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF8f89b7),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(1.0),
-            ),
-            _buildProgramInfo(0),
-            SizedBox(height: 10), // Add some space between program boxes
-            _buildProgramInfo(1),
-            SizedBox(height: 10), // Add some space between program boxes
-            _buildProgramInfo(2),
-            SizedBox(height: 20),
-            Text(
-              'cotain',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF8f89b7),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(1.0),
-            ),
-            _buildContainerInfo(),
+            _buildProgramSection(),
+            _buildStorageSection()
           ],
         ),
       ),
@@ -995,106 +971,153 @@ class MyPage extends StatelessWidget {
 
   Widget _buildPersonInfo() {
     return Container(
-      padding: EdgeInsets.all(6), // Reduce horizontal size
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(vertical:22.0, horizontal : 16.0),
+      margin: EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        border: Border.all(color: Color(0xFF8f89b7)),
-        borderRadius: BorderRadius.circular(10),
-        color: Color(0xFFFFFFFF),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10.0),
       ),
       child: Row(
         children: <Widget>[
-          Image.asset(
-            'assets/images/notification.png', // Replace with your image path
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
+          Image.network(
+              'https://i.ibb.co/RB8dzVk/2023-12-20-210902.png',
+              width:100,
+              height:100,
+              fit: BoxFit.cover,
           ),
           SizedBox(width: 20),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text('Name: $name'),
-              Text('Department: $department'),
-              Text('Room: $room'),
-              Text('Roommates: $roommates'),
-              Text('Ra: ,$Ra'), // Not sure what this line should display
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text('Name: $name', style: TextStyle(fontSize: 16)),
+                Text('Department: 산업경영공학과', style: TextStyle(fontSize: 16)), // 이미지에 따라 학과명 추가
+                Text('Room: $room', style: TextStyle(fontSize: 16)),
+                Text('Roommates: 박정은', style: TextStyle(fontSize: 16)), // 이미지에 따라 룸메이트 이름 추가
+                Text('Ra: $profile', style: TextStyle(fontSize: 16)),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildProgramInfo(int pindx) {
-    String program_ = program[pindx];
-    String program_list_ = program_list[pindx];
-    String prgram_info_ = prgram_info[pindx];
+  Widget _buildProgramSection() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 0.0), // Add bottom margin
-      child: Container(
-        height: 60,
-        width: 450,
-        padding: EdgeInsets.all(10), // Reduce horizontal size
-        margin: EdgeInsets.symmetric(horizontal: 20),
-        decoration: BoxDecoration(
-          border: Border.all(color: Color(0xFF8f89b7)),
-          borderRadius: BorderRadius.circular(10),
-          color: Color(0xFFFFFFFF),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text('$program_list_: $program_',
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            '프로그램 신청 내역',
             style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF8f89b7),
-              )
-              ),
-
-            Text('$prgram_info_',
-            style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF8f89b7),
-              )
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF8f89b7),
             ),
-            
-          ],
-        ),
+          ),
+          ...List.generate(programTitles.length, (index) {
+            return _buildProgramInfo(index);
+          }),
+        ],
       ),
     );
   }
 
-  Widget _buildContainerInfo() {
+  Widget _buildProgramInfo(int index) {
     return Container(
-      padding: EdgeInsets.all(10), // Reduce horizontal size
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(vertical: 10),
+      padding: EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        border: Border.all(color: Color(0xFF8f89b7)),
-        borderRadius: BorderRadius.circular(10),
-        color: Color(0xFFFFFFFF),
+        color: Colors.white, // 박스 배경 흰색
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            programType[index],
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black
+            ),
+          ),
+          SizedBox(height: 6),
+          Text(
+            programTitles[index],
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.black
+            ),
+          ),
+          SizedBox(height: 2),
+          Text(
+            programDetails[index],
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStorageSection() {
+    return Container(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            '물품 보관 내역',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF8f89b7),
+            ),
+          ),
+         _buildStorageInfo(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStorageInfo() {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(vertical: 10),
+      padding: EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10.0),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          Image.asset(
-            'assets/images/boxes.png', // Replace with your image path
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
-          ),
+            Image.network(
+                'https://i.ibb.co/9NYPHc4/2023-12-20-213703.png',
+                width: 100,
+                height: 100,
+                fit:BoxFit.cover,
+            ),
           SizedBox(width: 20),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text('Quantity: $quantity'),
-              Text('Storage Location: $storageLocation'),
-              Text('Storage Date: $storageDate'),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text('수량: $quantity', style: TextStyle(fontSize: 16)),
+                Text('보관위치: $storageLocation', style: TextStyle(fontSize: 16)),
+                Text('보관일: $storageDate', style: TextStyle(fontSize: 16)),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 }
+
