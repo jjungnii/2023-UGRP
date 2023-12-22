@@ -104,28 +104,23 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      alignment: Alignment.topCenter,
+      alignment: Alignment.center,
       color: const Color(0xFFe7e5f1),
       child: Padding(
         padding: const EdgeInsets.only(top: 25.0), // Set top padding
         child: GridView.count(
           crossAxisCount: 3,
           children: [
+            createGridItem('RC 소개', context, 'assets/images/office.png'),
+            createGridItem('공지사항', context, 'assets/images/megaphone.png'),
+            createGridItem('신고/건의', context, 'assets/images/alarm.png'),
+            createGridItem('창고 사용', context, 'assets/images/boxes.png'),
             createGridItem(
-                'RC Introduction', context, 'assets/images/office.png'),
-            createGridItem('Notice', context, 'assets/images/megaphone.png'),
-            createGridItem(
-                'Report/Proposal', context, 'assets/images/alarm.png'),
-            createGridItem(
-                'Manage Warehouses', context, 'assets/images/boxes.png'),
-            createGridItem(
-                'Order Delivery', context, 'assets/images/fast-delivery.png'),
-            createGridItem(
-                'Apply for Programs', context, 'assets/images/stage.png'),
-            createGridItem(
-                'Check Retirement', context, 'assets/images/moving-truck.png'),
-            createGridItem('Clean-up', context, 'assets/images/cleaning.png'),
-            createGridItem('Link Popo', context, 'assets/images/POPO.png'),
+                '배달 함께 주문', context, 'assets/images/fast-delivery.png'),
+            createGridItem('프로그램 신청', context, 'assets/images/stage.png'),
+            createGridItem('퇴사 점검', context, 'assets/images/moving-truck.png'),
+            createGridItem('대청소', context, 'assets/images/cleaning.png'),
+            createGridItem('POPO', context, 'assets/images/POPO.png'),
           ],
         ),
       ),
@@ -136,31 +131,31 @@ class HomeScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         updateTitle(title);
-        if (title == 'Order Delivery') {
+        if (title == '배달 함께 주문') {
           // Navigate to the Order Delivery page
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const OrderDeliveryScreen(),
           ));
-        } else if (title == 'Manage Warehouses') {
+        } else if (title == '창고 사용') {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const WarehouseManagementScreen(),
           ));
-        } else if (title == 'Report/Proposal') {
+        } else if (title == '신고/건의') {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const ReportProposalScreen(),
           ));
-        } else if (title == 'Check Retirement') {
+        } else if (title == '퇴사 점검') {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const checkretirmentScreen(),
           ));
-        } else if (title == 'Clean-up') {
+        } else if (title == '대청소') {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const checkcleaningScreen(),
           ));
-        } else if (title == 'Link Popo') {
+        } else if (title == 'POPO') {
           // If the title is 'Manage Warehouses', then launch the URL
           _launchURL_popo();
-        } else if (title == 'RC Introduction') {
+        } else if (title == 'RC 소개') {
           // Show dialog with options for RC 소개 and RA 소개
           showDialog(
             context: context,
@@ -242,14 +237,15 @@ class HomeScreen extends StatelessWidget {
         ),
         //child: Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min, // Use min to fit content size
+          // mainAxisSize: MainAxisSize.min, // Use min to fit content size
           children: [
             Expanded(
               child: Container(
+                padding: const EdgeInsets.only(top: 16.0),
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(imagePath),
-                    fit: BoxFit.contain,
+                    scale: 18,
                   ),
                 ),
               ),
