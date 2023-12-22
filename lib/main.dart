@@ -33,14 +33,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // _pages 리스트를 여기서 초기화합니다.
-    final List<Widget> _pages = [
-      HomeScreen(updateTitle: updateTitle), // updateTitle 함수를 전달합니다.
-      MyPage(),
-      ScheduleScreen(),
-      NotificationScreen(),
-    ];
-
     return Scaffold(
       appBar: AppBar(
         title: Text(_titles[_currentIndex]), // AppBar 제목 설정
@@ -50,19 +42,27 @@ class _NavigationScreenState extends State<NavigationScreen> {
       ),
       body: PageView(
         controller: _pageController,
-        physics: NeverScrollableScrollPhysics(),
-        children: _pages,
+        onPageChanged: (index){
+          setState(() {
+            _currentIndex=index;
+          });
+        }, 
+        children: [
+        HomeScreen(updateTitle: updateTitle), // updateTitle 함수를 전달합니다.
+      MyPage(),
+      ScheduleScreen(),
+        ]
       ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Color(0xFF8f89b7),
         unselectedItemColor: Color(0xFF8f89b7),
+        currentIndex:_currentIndex,
         onTap: (int index) {
           setState(() {
             _currentIndex = index;
-            _pageController.jumpToPage(index); // 애니메이션 없이 페이지 변경
           });
+          _pageController.jumpToPage(index); // 애니메이션 없이 페이지 변경
         },
-        currentIndex: _currentIndex,
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.menu),
@@ -137,6 +137,14 @@ class HomeScreen extends StatelessWidget {
       }else if(title == 'Report/Proposal'){
           Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => ReportProposalScreen(),
+        ));
+      }else if (title == 'Check Retirement') {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => checkretirmentScreen(),
+        ));
+      }else if (title == 'Clean-up') {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) =>  checkcleaningScreen(),
         ));
       }
        else  if (title == 'Link Popo') {
@@ -283,7 +291,6 @@ void _launchURL_popo() async {
 }
 }
 
-<<<<<<< HEAD
 //=========================// Report
 class ReportProposalScreen extends StatefulWidget {
   @override
@@ -303,6 +310,11 @@ class _ReportProposalScreenState extends State<ReportProposalScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('신고/건의 게시판'),
+        centerTitle: true,
+        backgroundColor: Color(0xFF8f89b7)
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -448,7 +460,6 @@ class _ReportProposalScreenState extends State<ReportProposalScreen> {
 // Report=============================
 
 
-=======
 //=========================RA 소개
 class RAIntroductionScreen extends StatelessWidget {
   @override
@@ -457,7 +468,6 @@ class RAIntroductionScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('RA 소개'),
         backgroundColor: Color(0xFF8f89b7), // 연보라색으로 변경
-
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -473,8 +483,6 @@ class RAIntroductionScreen extends StatelessWidget {
     );
   }
 }
->>>>>>> 152247bf1129a5f40089195b6729ad3aaf0a8119
-
 //=========================Delivery
 class DeliveryBoxTile extends StatefulWidget {
   final ImageProvider image;
@@ -624,7 +632,11 @@ class _OrderDeliveryScreenState extends State<OrderDeliveryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+      appBar: AppBar(
+        title: Text('RC 배달 공동 주문'),
+        centerTitle: true,
+        backgroundColor: Color(0xFF8f89b7),
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -846,7 +858,11 @@ class _WarehouseManagementScreenState extends State<WarehouseManagementScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // ... existing Scaffold code ...
+      appBar: AppBar(
+        title: Text('창고 사용'),
+        centerTitle: true,
+        backgroundColor: Color(0xFF8f89b7),
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -1014,16 +1030,6 @@ Widget _buildBoxedTile({
 //
 
 // ware house=============================
-<<<<<<< HEAD
-
-
-
-
-
-
-
-=======
->>>>>>> 152247bf1129a5f40089195b6729ad3aaf0a8119
 class DetailScreen extends StatelessWidget {
   final String title;
 
@@ -1274,34 +1280,464 @@ class MyPage extends StatelessWidget {
   }
 }
 
-//알림=============================================
-class NotificationScreen extends StatelessWidget {
+
+
+//퇴사점검========================
+class checkretirmentScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Center(
+  _checkretirmentScreenState createState() => _checkretirmentScreenState();
+}
+
+class _checkretirmentScreenState extends State<checkretirmentScreen> {
+  List<Map<String, dynamic>> packageData = [];
+  int counter = 0; // A counter to assign unique IDs
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize your list with default package info or more if needed
+  }
+
+  @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text('퇴사점검'),
+      centerTitle: true,
+      backgroundColor: Color(0xFF8f89b7),
+    ),
+    backgroundColor:Color(0xFFe7e5f1),
+    body: Center(
+      child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: () {
-                showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime(2101),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Color(0xFF8f89b7), // 연보라색
-                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0), // 크기 조절
+            Text(
+              '퇴사점검',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF8f89b7)
               ),
-              child: Text('Pick a date'),
             ),
-            SizedBox(height: 8.0), // 버튼과 이미지 사이 여백 조절
+            SizedBox(height: 20),
+            Container(
+              margin: EdgeInsets.all(60.0), // 주변 여백 설정
+              padding: EdgeInsets.all(36.0), // 카드 내부 여백 설정
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 4,
+                    offset: Offset(0,2),
+                  )
+                ]
+              ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,          
+                  children: [
+                    _buildButton(context, '퇴사점검 예약', _reservecheckout),
+                    SizedBox(height: 16),
+                    _buildButton(context, '퇴사점검표 작성', _writecheckouttable),
+                    SizedBox(height: 16),
+                    _buildButton(context, '퇴사점검 현황', _checkingcurrentstate),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
+    ),
+  );
+}
+
+Widget _buildButton(BuildContext context, String text, VoidCallback onPressed) {
+  return SizedBox(
+    width: double.infinity, // 버튼 너비를 최대로 설정
+    child: ElevatedButton(
+      onPressed: onPressed,
+      child: Text(text),
+      style: ElevatedButton.styleFrom(
+        primary: Color(0xFF8f89b7),
+        onPrimary: Colors.white, // 버튼 텍스트 색상
+        elevation: 0, // 그림자 효과 제거
+        shape: RoundedRectangleBorder( // 모서리 둥글게 설정
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        padding: EdgeInsets.symmetric(vertical: 16.0), // 버튼 내부 패딩 설정
+      ),
+    ),
+  );
+}
+
+
+  void _reservecheckout() {
+    String title = '';
+    String content = '';
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('희망점검시간'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                TextField(
+                  decoration: InputDecoration(hintText: 'Enter date ex) 2023-12-22 (금)'),
+                  onChanged: (value) => title = value,
+                ),
+                TextField(
+                  decoration: InputDecoration(hintText: 'Enter time ex) 9:00am'),
+                  onChanged: (value) => content = value,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: Text('add'),
+              onPressed: (){
+                _addNewItem1(title, content);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+void _addNewItem1(String title, String content) {
+    setState(() {
+      packageData.add({
+        'id': counter,
+        'title': title,
+        'content': content,
+        'color': Color(0xFF8f89b7),
+      });
+      counter++;
+    });
+  }
+
+
+
+void _writecheckouttable() {
+    String title = '';
+    String content = '';
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('퇴사점검표'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                TextField(
+                  decoration: InputDecoration(hintText: 'checklist 확인완료'),
+                  onChanged: (value) => title = value,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: Text('add'),
+              onPressed: (){
+                _addNewItem2(title, content);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+void _addNewItem2(String title, String content) {
+    setState(() {
+      packageData.add({
+        'id': counter,
+        'title': title,
+        'content': content,
+        'color': Color(0xFF8f89b7),
+      });
+      counter++;
+    });
+  }
+
+  void _checkingcurrentstate() {
+    String title = '';
+    String content = '';
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('예정점검시간'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                TextField(
+                  decoration: InputDecoration(hintText: '2023-12-22 (금) 9:00 am'),
+                  onChanged: (value) => title = value,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
     );
   }
 }
+
+// 퇴사점검=============================
+
+//대청소점검========================
+class checkcleaningScreen extends StatefulWidget {
+  @override
+  _checkcleaningScreenState createState() => _checkcleaningScreenState();
+}
+
+class _checkcleaningScreenState extends State<checkcleaningScreen> {
+  List<Map<String, dynamic>> packageData = [];
+  int counter = 0; // A counter to assign unique IDs
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize your list with default package info or more if needed
+  }
+
+  @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text('대청소점검'),
+      centerTitle: true,
+      backgroundColor: Color(0xFF8f89b7),
+    ),
+    backgroundColor:Color(0xFFe7e5f1),
+    body: Center(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '대청소점검',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF8f89b7)
+              ),
+            ),
+            SizedBox(height: 20),
+            Container(
+              margin: EdgeInsets.all(60.0), // 주변 여백 설정
+              padding: EdgeInsets.all(36.0), // 카드 내부 여백 설정
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 4,
+                    offset: Offset(0,2),
+                  )
+                ]
+              ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,          
+                  children: [
+                    _buildButton(context, '청소점검 예약', _reservecheckout),
+                    SizedBox(height: 16),
+                    _buildButton(context, '청소점검표 작성', _writecheckouttable),
+                    SizedBox(height: 16),
+                    _buildButton(context, '청소점검 현황', _checkingcurrentstate),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+Widget _buildButton(BuildContext context, String text, VoidCallback onPressed) {
+  return SizedBox(
+    width: double.infinity, // 버튼 너비를 최대로 설정
+    child: ElevatedButton(
+      onPressed: onPressed,
+      child: Text(text),
+      style: ElevatedButton.styleFrom(
+        primary: Color(0xFF8f89b7),
+        onPrimary: Colors.white, // 버튼 텍스트 색상
+        elevation: 0, // 그림자 효과 제거
+        shape: RoundedRectangleBorder( // 모서리 둥글게 설정
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        padding: EdgeInsets.symmetric(vertical: 16.0), // 버튼 내부 패딩 설정
+      ),
+    ),
+  );
+}
+
+
+  void _reservecheckout() {
+    String title = '';
+    String content = '';
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('희망점검시간'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                TextField(
+                  decoration: InputDecoration(hintText: 'Enter time ex) 9:00am'),
+                  onChanged: (value) => content = value,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: Text('add'),
+              onPressed: (){
+                _addNewItem1(title, content);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+void _addNewItem1(String title, String content) {
+    setState(() {
+      packageData.add({
+        'id': counter,
+        'title': title,
+        'content': content,
+        'color': Color(0xFF8f89b7),
+      });
+      counter++;
+    });
+  }
+
+
+
+void _writecheckouttable() {
+    String title = '';
+    String content = '';
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('청소점검표'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                TextField(
+                  decoration: InputDecoration(hintText: 'checklist 확인완료'),
+                  onChanged: (value) => title = value,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: Text('add'),
+              onPressed: (){
+                _addNewItem2(title, content);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+void _addNewItem2(String title, String content) {
+    setState(() {
+      packageData.add({
+        'id': counter,
+        'title': title,
+        'content': content,
+        'color': Color(0xFF8f89b7),
+      });
+      counter++;
+    });
+  }
+
+  void _checkingcurrentstate() {
+    String title = '';
+    String content = '';
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('예정점검시간'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                TextField(
+                  decoration: InputDecoration(hintText: '9:00 am'),
+                  onChanged: (value) => title = value,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+// 대청소점검=============================
