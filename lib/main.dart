@@ -132,17 +132,16 @@ class HomeScreen extends StatelessWidget {
       onTap: () {
         updateTitle(title);
         if (title == '배달 함께 주문') {
-          // Navigate to the Order Delivery page
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const OrderDeliveryScreen(),
-          ));
-        } else if (title == '창고 사용') {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => const WarehouseManagementScreen(),
           ));
         } else if (title == '신고/건의') {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const ReportProposalScreen(),
+          ));
+        } else if (title == '창고 사용') {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => const WarehouseManagementScreen(),
           ));
         } else if (title == '퇴사 점검') {
           Navigator.of(context).push(MaterialPageRoute(
@@ -703,6 +702,11 @@ class _OrderDeliveryScreenState extends State<OrderDeliveryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('배달 함께 주문'),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF8f89b7),
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -960,8 +964,12 @@ class _WarehouseManagementScreenState extends State<WarehouseManagementScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // ... existing Scaffold code ...
-      body: Center(
+      appBar: AppBar(
+        title: const Text('창고 사용'),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF8f89b7),
+      ),
+        body: Center(
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
