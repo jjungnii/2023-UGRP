@@ -31,9 +31,9 @@ class NavigationScreen extends StatefulWidget {
 
 class _NavigationScreenState extends State<NavigationScreen> {
   int _currentIndex = 0;
-  String _currentTitle = 'Menu';
+  String _currentTitle = '메뉴';
   final PageController _pageController = PageController();
-  final List<String> _titles = ['Menu', 'My Page', 'Calendar'];
+  final List<String> _titles = ['메뉴', '마이페이지', '알맹이'];
   void updateTitle(String title) {
     setState(() {
       _currentTitle = title;
@@ -74,15 +74,15 @@ class _NavigationScreenState extends State<NavigationScreen> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.menu),
-            label: 'Menu',
+            label: '메뉴',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'My page',
+            label: '마이 페이지',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
-            label: 'Calander',
+            label: '알맹이',
           ),
           // 여기에 추가 BottomNavigationBarItem들을 정의합니다.
         ],
@@ -107,11 +107,11 @@ class HomeScreen extends StatelessWidget {
       alignment: Alignment.center,
       color: const Color(0xFFe7e5f1),
       child: Padding(
-        padding: const EdgeInsets.only(top: 25.0), // Set top padding
+        padding: const EdgeInsets.only(top: 110), // Set top padding
         child: GridView.count(
           crossAxisCount: 3,
           children: [
-            createGridItem('RC 소개', context, 'assets/images/office.png'),
+            createGridItem('RC & RA 소개', context, 'assets/images/office.png'),
             createGridItem('공지사항', context, 'assets/images/megaphone.png'),
             createGridItem('신고/건의', context, 'assets/images/alarm.png'),
             createGridItem('창고 사용', context, 'assets/images/boxes.png'),
@@ -119,7 +119,7 @@ class HomeScreen extends StatelessWidget {
                 '배달 함께 주문', context, 'assets/images/fast-delivery.png'),
             createGridItem('프로그램 신청', context, 'assets/images/stage.png'),
             createGridItem('퇴사 점검', context, 'assets/images/moving-truck.png'),
-            createGridItem('대청소', context, 'assets/images/cleaning.png'),
+            createGridItem('청소 점검', context, 'assets/images/cleaning.png'),
             createGridItem('POPO', context, 'assets/images/POPO.png'),
           ],
         ),
@@ -147,21 +147,27 @@ class HomeScreen extends StatelessWidget {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const checkretirmentScreen(),
           ));
-        } else if (title == '대청소') {
+        } else if (title == '청소 점검') {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const checkcleaningScreen(),
           ));
         } else if (title == 'POPO') {
           // If the title is 'Manage Warehouses', then launch the URL
           _launchURL_popo();
-        } else if (title == 'RC 소개') {
+        } else if (title == 'RC & RA 소개') {
           // Show dialog with options for RC 소개 and RA 소개
           showDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title:
-                    const Text('Choose an option', textAlign: TextAlign.center),
+                title: const Text(
+                  'RC & RA 소개',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF8f89b7),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -322,7 +328,7 @@ class _ReportProposalScreenState extends State<ReportProposalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text('신고/건의 게시판'),
+          title: const Text('신고 / 건의'),
           centerTitle: true,
           backgroundColor: const Color(0xFF8f89b7)),
       body: Center(
@@ -330,11 +336,11 @@ class _ReportProposalScreenState extends State<ReportProposalScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Report/Proposal',
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF8f89b7))),
+              // const Text('Report/Proposal',
+              //     style: TextStyle(
+              //         fontSize: 24,
+              //         fontWeight: FontWeight.bold,
+              //         color: Color(0xFF8f89b7))),
               const SizedBox(height: 10),
               ...packageData
                   .map((data) => _buildBoxedTile(
@@ -348,7 +354,7 @@ class _ReportProposalScreenState extends State<ReportProposalScreen> {
                 onPressed: _showAddPackageDialog,
                 style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF8f89b7)),
-                child: const Text('+ Add New Item'),
+                child: const Text('+ 글 작성'),
               ),
             ],
           ),
@@ -484,6 +490,7 @@ class RAIntroductionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFe7e5f1),
       appBar: AppBar(
         title: const Text('RA 소개'),
         backgroundColor: const Color(0xFF8f89b7), // 연보라색으로 변경
@@ -570,31 +577,43 @@ class _DeliveryBoxTileState extends State<DeliveryBoxTile> {
       child: Column(
         children: [
           ListTile(
-            leading: Image(
-              image: widget.image,
-              width: 40,
-              height: 40,
-              color: Colors.white,
-            ),
-            title:
-                Text(widget.title, style: TextStyle(color: widget.titleColor)),
-            subtitle: Text(widget.subtitle,
-                style: TextStyle(color: widget.subtitleColor)),
-            trailing: _buildDeliveryStatusBox(widget.status),
-          ),
+              leading: Image(
+                image: widget.image,
+                width: 40,
+                height: 40,
+                color: const Color(0xFF8f89b7),
+              ),
+              // title: Text(widget.title,
+              //     style: TextStyle(color: widget.titleColor)),
+              subtitle: Row(
+                children: [
+                  Text("${widget.title}\n${widget.subtitle}",
+                      style: TextStyle(color: widget.subtitleColor)),
+                  const Spacer(),
+                  ElevatedButton(
+                    onPressed: _joinDelivery,
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: const Color(0xFF8f89b7),
+                    ), // Update this call
+                    child: const Text(
+                      "주문 참여",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              )
+
+              // trailing: _buildDeliveryStatusBox(widget.status),
+              ),
           // Text('Participants: $participants',
           //     style: const TextStyle(
           //       color: Colors.white,
           //       fontWeight: FontWeight.bold,
           //     )),
-          ElevatedButton(
-            onPressed: _joinDelivery,
-            style: ElevatedButton.styleFrom(
-              foregroundColor: const Color(0xFF8f89b7),
-              backgroundColor: Colors.white,
-            ), // Update this call
-            child: const Text('주문 참여'),
-          ),
         ],
       ),
     );
@@ -702,6 +721,7 @@ class _OrderDeliveryScreenState extends State<OrderDeliveryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFe7e5f1),
       appBar: AppBar(
         title: const Text('배달 함께 주문'),
         centerTitle: true,
@@ -724,7 +744,7 @@ class _OrderDeliveryScreenState extends State<OrderDeliveryScreen> {
 
               const SizedBox(height: 10),
               ...packageTiles, // This will display the list of tiles on the screen
-              const SizedBox(height: 20),
+              const SizedBox(height: 100),
             ],
           ),
         ),
@@ -759,11 +779,10 @@ class _OrderDeliveryScreenState extends State<OrderDeliveryScreen> {
         children: [
           ListTile(
             leading: Image(
-              image: image,
-              width: 40,
-              height: 40,
-              color: Colors.white,
-            ),
+                image: image,
+                width: 40,
+                height: 40,
+                color: const Color(0xFF8f89b7)),
             title: Text(title, style: TextStyle(color: titleColor)),
             subtitle: Text(subtitle, style: TextStyle(color: subtitleColor)),
             trailing: _buildDeliveryStatusBox(status), // Call to the new method
@@ -816,13 +835,13 @@ class _OrderDeliveryScreenState extends State<OrderDeliveryScreen> {
       barrierDismissible: false, // User must tap button to dismiss dialog
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Add New Delivery'),
+          title: const Text('함께 주문 추가'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 TextField(
                   decoration: const InputDecoration(
-                    hintText: 'Enter restaurant name',
+                    hintText: '가게 이름  ex)베라보',
                   ),
                   onChanged: (value) {
                     restaurantName = value;
@@ -830,7 +849,7 @@ class _OrderDeliveryScreenState extends State<OrderDeliveryScreen> {
                 ),
                 TextField(
                   decoration: const InputDecoration(
-                    hintText: 'Enter order completion time',
+                    hintText: '주문 예정 일시  ex)1월 1일 00:00',
                   ),
                   keyboardType: TextInputType.datetime,
                   onChanged: (value) {
@@ -839,7 +858,7 @@ class _OrderDeliveryScreenState extends State<OrderDeliveryScreen> {
                 ),
                 TextField(
                   decoration: const InputDecoration(
-                    hintText: 'Enter order Link',
+                    hintText: '오픈채팅방 링크',
                   ),
                   //keyboardType: TextInputType.datetime,
                   onChanged: (value) {
@@ -851,13 +870,13 @@ class _OrderDeliveryScreenState extends State<OrderDeliveryScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: const Text('취소'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Add'),
+              child: const Text('추가'),
               onPressed: () {
                 // Call a method to add a new delivery info box
                 addOrder(restaurantName, orderTime, orderLink);
@@ -877,10 +896,10 @@ class _OrderDeliveryScreenState extends State<OrderDeliveryScreen> {
       Widget newTile = DeliveryBoxTile(
         image: const AssetImage('assets/images/fast-delivery.png'),
         title: restaurantName,
-        subtitle: '주문 예정 시간: $orderTime',
-        color: const Color(0xFF8f89b7),
-        titleColor: Colors.white,
-        subtitleColor: Colors.white,
+        subtitle: '주문 예정 일시 | $orderTime',
+        color: Colors.white,
+        titleColor: const Color(0xFF8f89b7),
+        subtitleColor: const Color(0xFF8f89b7),
         status: 'Pending',
         orderLink: orderLink, // Pass the order link here
       );
@@ -964,22 +983,30 @@ class _WarehouseManagementScreenState extends State<WarehouseManagementScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFe7e5f1),
       appBar: AppBar(
         title: const Text('창고 사용'),
         centerTitle: true,
         backgroundColor: const Color(0xFF8f89b7),
       ),
-        body: Center(
+      body: Center(
         child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               // ... existing widgets ...
-              // const Text('WarehouseManage',
+              // const Text('보관 물품 목록',
+              //     textAlign: TextAlign.left,
               //     style: TextStyle(
               //         fontSize: 24,
               //         fontWeight: FontWeight.bold,
               //         color: Color(0xFF8f89b7))),
+              ElevatedButton(
+                onPressed: _showAddPackageDialog,
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF8f89b7)),
+                child: const Text('+ 보관 물품 추가'),
+              ),
               const SizedBox(height: 10),
               ...packageData
                   .map((data) => _buildBoxedTile(
@@ -990,12 +1017,7 @@ class _WarehouseManagementScreenState extends State<WarehouseManagementScreen> {
                         color: data['color'],
                       ))
                   .toList(),
-              ElevatedButton(
-                onPressed: _showAddPackageDialog,
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF8f89b7)),
-                child: const Text('+ Add New Item'),
-              ),
+              const SizedBox(height: 150),
               // ... existing widgets ...
             ],
           ),
@@ -1017,17 +1039,18 @@ class _WarehouseManagementScreenState extends State<WarehouseManagementScreen> {
           // Use StatefulBuilder to update the dialog's state
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
-              title: const Text('Add New Package'),
+              title: const Text('보관 물품 추가'),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
                     TextField(
                       decoration:
-                          const InputDecoration(hintText: 'Enter location'),
+                          const InputDecoration(hintText: '보관 위치  ex)127'),
                       onChanged: (value) => location = value,
                     ),
                     TextField(
-                      decoration: const InputDecoration(hintText: 'Enter date'),
+                      decoration: const InputDecoration(
+                          hintText: '보관 날짜  ex)2023-01-01'),
                       onChanged: (value) => date = value,
                     ),
                     DropdownButton<String>(
@@ -1051,11 +1074,11 @@ class _WarehouseManagementScreenState extends State<WarehouseManagementScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: const Text('Cancel'),
+                  child: const Text('취소'),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 TextButton(
-                  child: const Text('Add'),
+                  child: const Text('추가'),
                   onPressed: () {
                     print('Adding Package: $location, $date, $category');
                     // _addNewPackageInfo(1, studentId, location, date, category);
@@ -1081,9 +1104,9 @@ class _WarehouseManagementScreenState extends State<WarehouseManagementScreen> {
         'image': (category == 'Box')
             ? const AssetImage('assets/images/box-linear.png')
             : const AssetImage('assets/images/refrigerator.png'),
-        'title': 'Location: $location',
-        'subtitle': 'Date: $date - Category: $category',
-        'color': const Color(0xFF8f89b7),
+        'title': '보관 위치 | $location',
+        'subtitle': '보관 날짜 | $date',
+        'color': Colors.white,
       });
     });
   }
@@ -1100,14 +1123,13 @@ class _WarehouseManagementScreenState extends State<WarehouseManagementScreen> {
     required String title,
     required String subtitle,
     required Color color,
-    Color titleColor = Colors.white,
-    Color subtitleColor = Colors.white,
+    Color titleColor = const Color(0xFF8f89b7),
   }) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: color,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
@@ -1120,30 +1142,37 @@ class _WarehouseManagementScreenState extends State<WarehouseManagementScreen> {
       child: Column(
         children: [
           ListTile(
-            leading: Image(
-              image: image,
-              width: 40,
-              height: 40,
-              color: Colors.white,
-            ),
-            title: Text(
-              title,
-              style: TextStyle(color: titleColor, fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(
-              subtitle,
-              style: TextStyle(color: subtitleColor),
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () => _removePackageInfo(id),
-              style: TextButton.styleFrom(padding: const EdgeInsets.all(8)),
-              child:
-                  const Text('Remove', style: TextStyle(color: Colors.white)),
-            ),
-          ),
+              leading: Image(
+                image: image,
+                width: 50,
+                height: 50,
+                color: const Color(0xFF8f89b7),
+              ),
+              // title: Text(
+              //   "$title\n$subtitle",
+              //   style: TextStyle(color: titleColor),
+              // ),
+              subtitle: Row(
+                children: [
+                  Text(
+                    "$title\n$subtitle",
+                    style: TextStyle(
+                      color: titleColor,
+                    ),
+                  ),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: () => _removePackageInfo(id),
+                    style:
+                        TextButton.styleFrom(padding: const EdgeInsets.all(8)),
+                    child: const Text('물품 찾기',
+                        style: TextStyle(
+                          color: Color(0xFF8f89b7),
+                          decoration: TextDecoration.underline,
+                        )),
+                  ),
+                ],
+              )),
         ],
       ),
     );
@@ -1173,26 +1202,27 @@ class ScheduleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: const Color(0xFFe7e5f1),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: () {
-                showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime(2101),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF8f89b7), // 연보라색
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0, vertical: 16.0), // 크기 조절
-              ),
-              child: const Text('Pick a date'),
-            ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     showDatePicker(
+            //       context: context,
+            //       initialDate: DateTime.now(),
+            //       firstDate: DateTime(2000),
+            //       lastDate: DateTime(2101),
+            //     );
+            //   },
+            //   style: ElevatedButton.styleFrom(
+            //     backgroundColor: const Color(0xFF8f89b7), // 연보라색
+            //     padding: const EdgeInsets.symmetric(
+            //         horizontal: 24.0, vertical: 16.0), // 크기 조절
+            //   ),
+            //   // child: const Text('Pick a date'),
+            // ),
             const SizedBox(height: 8.0), // 버튼과 이미지 사이 여백 조절
             Image.network(
               'https://i.ibb.co/17C0r9Q/2023-12-20-211943.png', // 이미지 URL로 수정
@@ -1213,19 +1243,18 @@ class MyPage extends StatelessWidget {
   final String name = "박지원";
   final String studentId = "20200000";
   final String room = "1022호";
-  final String profile = "유현아 이승은";
+  final String profile = "박OO 조OO";
 
-  final List<String> programType = ["층 프로그램", "전체 행사", "둥지"];
-  final List<String> programTitles = ["카네이션 만들기", "RC 잔치", "베이킹 둥지"];
+  final List<String> programType = ["전체 행사", "둥지"];
+  final List<String> programTitles = ["RC 잔치", "베이킹 둥지"];
   final List<String> programDetails = [
-    "2023.10.22 19:00 / 층홀",
-    "2023.10.22 19:00 / RC 1층",
-    "2023.10.22 19:00 / 휴게실4"
+    "2023.10.22 19:00 | RC 1층",
+    "2023.10.22 19:00 | 휴게실4"
   ];
 
   final int quantity = 1;
-  final String storageLocation = "129";
-  final String storageDate = "2023.10.22";
+  final String storageLocation = "R11";
+  final String storageDate = "2023-12-25";
 
   MyPage({super.key});
 
@@ -1274,13 +1303,13 @@ class MyPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text('Name: $name', style: const TextStyle(fontSize: 16)),
-                const Text('Department: 산업경영공학과',
+                Text('이름 | $name', style: const TextStyle(fontSize: 16)),
+                const Text('학과 | 산업경영공학과',
                     style: TextStyle(fontSize: 16)), // 이미지에 따라 학과명 추가
-                Text('Room: $room', style: const TextStyle(fontSize: 16)),
-                const Text('Roommates: 박정은',
+                Text('호수 | $room', style: const TextStyle(fontSize: 16)),
+                const Text('룸메이트 | 박정은',
                     style: TextStyle(fontSize: 16)), // 이미지에 따라 룸메이트 이름 추가
-                Text('Ra: $profile', style: const TextStyle(fontSize: 16)),
+                Text('담당 RA | $profile', style: const TextStyle(fontSize: 16)),
               ],
             ),
           ),
@@ -1378,21 +1407,22 @@ class MyPage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          Image.network(
-            'https://i.ibb.co/9NYPHc4/2023-12-20-213703.png',
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
+          const Image(
+            image: AssetImage('assets/images/refrigerator.png'),
+            width: 60,
+            height: 60,
+            color: Color(0xFF8f89b7),
           ),
           const SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text('수량: $quantity', style: const TextStyle(fontSize: 16)),
-                Text('보관위치: $storageLocation',
+                // Text('수량 | $quantity', style: const TextStyle(fontSize: 16)),
+                Text('보관 위치 | $storageLocation',
                     style: const TextStyle(fontSize: 16)),
-                Text('보관일: $storageDate', style: const TextStyle(fontSize: 16)),
+                Text('보관 날짜 | $storageDate',
+                    style: const TextStyle(fontSize: 16)),
               ],
             ),
           ),
@@ -1424,7 +1454,7 @@ class _checkretirmentScreenState extends State<checkretirmentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('퇴사점검'),
+        title: const Text('퇴사 점검'),
         centerTitle: true,
         backgroundColor: const Color(0xFF8f89b7),
       ),
@@ -1434,14 +1464,13 @@ class _checkretirmentScreenState extends State<checkretirmentScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                '퇴사점검',
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF8f89b7)),
-              ),
-              const SizedBox(height: 20),
+              // const Text(
+              //   '퇴사점검',
+              //   style: TextStyle(
+              //       fontSize: 24,
+              //       fontWeight: FontWeight.bold,
+              //       color: Color(0xFF8f89b7)),
+              // ),
               Container(
                 margin: const EdgeInsets.all(60.0), // 주변 여백 설정
                 padding: const EdgeInsets.all(36.0), // 카드 내부 여백 설정
@@ -1459,14 +1488,15 @@ class _checkretirmentScreenState extends State<checkretirmentScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildButton(context, '퇴사점검 예약', _reservecheckout),
+                    _buildButton(context, '퇴사 점검 예약', _reservecheckout),
                     const SizedBox(height: 16),
-                    _buildButton(context, '퇴사점검표 작성', _writecheckouttable),
+                    _buildButton(context, '퇴사 점검표 작성', _writecheckouttable),
                     const SizedBox(height: 16),
-                    _buildButton(context, '퇴사점검 현황', _checkingcurrentstate),
+                    _buildButton(context, '퇴사 점검 현황', _checkingcurrentstate),
                   ],
                 ),
               ),
+              const SizedBox(height: 70),
             ],
           ),
         ),
@@ -1658,7 +1688,7 @@ class _checkcleaningScreenState extends State<checkcleaningScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('대청소점검'),
+        title: const Text('청소 점검'),
         centerTitle: true,
         backgroundColor: const Color(0xFF8f89b7),
       ),
@@ -1668,13 +1698,13 @@ class _checkcleaningScreenState extends State<checkcleaningScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                '대청소점검',
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF8f89b7)),
-              ),
+              // const Text(
+              //   '청소 점검',
+              //   style: TextStyle(
+              //       fontSize: 24,
+              //       fontWeight: FontWeight.bold,
+              //       color: Color(0xFF8f89b7)),
+              // ),
               const SizedBox(height: 20),
               Container(
                 margin: const EdgeInsets.all(60.0), // 주변 여백 설정
@@ -1693,14 +1723,15 @@ class _checkcleaningScreenState extends State<checkcleaningScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildButton(context, '청소점검 예약', _reservecheckout),
+                    _buildButton(context, '청소 점검 예약', _reservecheckout),
                     const SizedBox(height: 16),
-                    _buildButton(context, '청소점검표 작성', _writecheckouttable),
+                    _buildButton(context, '청소 점검표 작성', _writecheckouttable),
                     const SizedBox(height: 16),
-                    _buildButton(context, '청소점검 현황', _checkingcurrentstate),
+                    _buildButton(context, '청소 점검 현황', _checkingcurrentstate),
                   ],
                 ),
               ),
+              const SizedBox(height: 70),
             ],
           ),
         ),

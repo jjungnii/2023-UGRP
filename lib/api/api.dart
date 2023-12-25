@@ -1,5 +1,5 @@
 class API {
-  static const hostConnect = "http://192.168.0.103/api_delivery"; //IPV4 주소 할당
+  static const hostConnect = "http://192.168.0.22/api_delivery"; //IPV4 주소 할당
   static const hostConnectDelivery = "$hostConnect/delivery";
 
   static const addOrder = "$hostConnect/delivery/addOrder.php";
