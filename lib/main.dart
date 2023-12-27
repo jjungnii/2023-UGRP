@@ -135,7 +135,12 @@ class HomeScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         updateTitle(title);
-        if (title == '배달 함께 주문') {
+        if (title == '공지사항'){
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => const NotificationScreen(),
+          ));
+        }
+        else if (title == '배달 함께 주문') {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const OrderDeliveryScreen(),
           ));
@@ -315,8 +320,225 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-//=========================// Program register
+//=========================// Notification
+class NotificationScreen extends StatefulWidget {
+  const NotificationScreen({super.key});
 
+  @override
+  _NotificationScreenState createState() => _NotificationScreenState();
+}
+
+class _NotificationScreenState extends State<NotificationScreen> {
+  List<Map<String, dynamic>> packageData = [];
+  int counter = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pre-add two programs
+packageData.addAll([
+    {'id': counter++, 'title': 'RC 대청소 - 10/26', 'content': '김장김치 프로그램 내용', 'capacity': 10, 'appliedCount': 0, 'floor': 2, 'color': Colors.white},
+    {'id': counter++, 'title': 'RA 알림 - 10/27', 'content': '보드게임 프로그램 내용', 'capacity': 10, 'appliedCount': 0, 'floor': 3, 'color': Colors.white},
+    {'id': counter++, 'title': 'RC 전통주 문화 행상 - 10/25', 'content': '축구관람 프로그램 내용', 'capacity': 10, 'appliedCount': 0, 'floor': 7, 'color': Colors.white},
+    {'id': counter++, 'title': '시험기간 정숙 기간 - 10/12~10/30', 'content': '네일아트 프로그램 내용', 'capacity': 10, 'appliedCount': 0, 'floor': 9, 'color': Colors.white},
+  ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFFe7e5f1),
+      appBar: AppBar(
+        title: const Text('공지사항'),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF8f89b7),
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 10),
+              ...packageData.map((data) => _buildBoxedTile(data)).toList(),
+              /*ElevatedButton(
+                onPressed: _showAddPackageDialog,
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFe7e5f1),),
+                child: const Text('+ 프로그램 추가'),
+              ),*/
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showAddPackageDialog() {
+    String title = '';
+    String content = '';
+    String capacity = '';
+    String floor = '';
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('프로그램 추가'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                TextField(
+                  decoration: const InputDecoration(hintText: '프로그램 제목'),
+                  onChanged: (value) => title = value,
+                ),
+                TextField(
+                  decoration: const InputDecoration(hintText: '프로그램 설명'),
+                  onChanged: (value) => content = value,
+                ),
+                TextField(
+                  decoration: const InputDecoration(hintText: '정원'),
+                  onChanged: (value) => capacity = value,
+                  keyboardType: TextInputType.number,
+                ),
+                TextField(
+                  decoration: const InputDecoration(hintText: '층'),
+                  onChanged: (value) => floor = value,
+                  keyboardType: TextInputType.number,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('취소'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: const Text('추가'),
+              onPressed: () {
+                _addNewItem(title, content, int.tryParse(capacity) ?? 0, int.tryParse(floor) ?? 0);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _addNewItem(String title, String content, int capacity, int floor) {
+    setState(() {
+      packageData.add({
+        'id': counter,
+        'title': '$floor층 - $title',
+        'content': content,
+        'capacity': capacity,
+        'appliedCount': 0,
+        'floor': floor,
+        'color': Colors.white,
+      });
+      counter++;
+    });
+  }
+
+  Widget _buildBoxedTile(Map<String, dynamic> data) {
+   return Container(
+    margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10), // Increased vertical spacing
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      color: data['color'],
+      borderRadius: BorderRadius.circular(8),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.5),
+          offset: const Offset(0, 2),
+          blurRadius: 4,
+        ),
+      ],
+    ),
+      child: ListTile(
+        title: Text(
+          data['title'],
+          style: const TextStyle(color: Color(0xFF8f89b7), fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text(
+          '확인인원: ${data['appliedCount']} ',
+          style: const TextStyle(color: Color(0xFF8f89b7)),
+        ),
+        trailing: TextButton(
+          onPressed: () => _applyForProgram(data['id'], data['capacity']),
+          child: const Text('확인하기', style: TextStyle(color: Color(0xFF8f89b7))),
+        ),
+        onTap: () => _showPackageDetails(data),
+      ),
+    );
+  }
+
+  void _showPackageDetails(Map<String, dynamic> data) {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('프로그램 설명'),
+          content: SingleChildScrollView(
+            child: Text(data['content']),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('신청'),
+              onPressed: () {
+                _applyForProgram(data['id'], data['capacity']);
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('닫기'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+bool _applyForProgram(int id, int capacity) {
+  if (packageData.any((element) => element['id'] == id && element['appliedCount'] < capacity)) {
+    setState(() {
+      packageData.firstWhere((element) => element['id'] == id)['appliedCount']++;
+    });
+    _showToast('확인했습니다.'); // Only pass the message
+    return true;
+  } else {
+    _showToast('모집이 마감되었습니다'); // Only pass the message
+    return false;
+  }
+}
+
+  void _removeItem(int id) {
+    setState(() {
+      packageData.removeWhere((element) => element['id'] == id);
+    });
+  }
+
+void _showToast(String message) {
+  
+  Fluttertoast.showToast(
+    msg: message,
+    toastLength: Toast.LENGTH_SHORT,
+    timeInSecForIosWeb: 2,
+    backgroundColor: Color.fromARGB(255, 89, 55, 95),
+    textColor: Colors.white,
+    fontSize: 16.0,
+    webPosition: "center",
+    webBgColor: "linear-gradient(to right, #B19CD9 100%, #B19CD9 100%, #E6E6FA 100%, #E6E6FA 100%)"
+
+  );
+}
+
+}
+//=========================// Notification
+
+//=========================// Program register
 
 class ProgramRegisterScreen extends StatefulWidget {
   const ProgramRegisterScreen({super.key});
