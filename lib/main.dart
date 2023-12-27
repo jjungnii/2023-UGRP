@@ -532,6 +532,7 @@ void _showToast(String message) {
     backgroundColor: Color.fromARGB(255, 89, 55, 95),
     textColor: Colors.white,
     fontSize: 16.0,
+    webPosition: "center",
     webBgColor: "linear-gradient(to right, #B19CD9 100%, #B19CD9 100%, #E6E6FA 100%, #E6E6FA 100%)"
 
   );
